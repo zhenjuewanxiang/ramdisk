@@ -145,10 +145,25 @@ res_check() {
 }
 
 probe() {
+  INSMOD=insmod
+  if [ -x /sbin/insmod ]; then
+    INSMOD=/sbin/insmod
+  elif [ -x /usr/sbin/insmod ]; then
+    INSMOD=/usr/sbin/insmod
+  fi
+
+  $INSMOD /mnt/system/ko/configfs.ko 2>/dev/null || true
+  $INSMOD /mnt/system/ko/usb-common.ko 2>/dev/null || true
+  $INSMOD /mnt/system/ko/udc-core.ko 2>/dev/null || true
+  $INSMOD /mnt/system/ko/libcomposite.ko 2>/dev/null || true
+  $INSMOD /mnt/system/ko/usbcore.ko 2>/dev/null || true
+  $INSMOD /mnt/system/ko/roles.ko 2>/dev/null || true
+  $INSMOD /mnt/system/ko/dwc2.ko 2>/dev/null || true
+
   if [ ! -d $CVI_DIR ]; then
     mkdir $CVI_DIR
   fi
-  if [ ! -d $CVI_DIR/usb_gadget ]; then
+  if [ ! -d $CVI_GADGET ]; then
     # Enale USB ConfigFS
     mount none $CVI_DIR -t configfs
     # Create gadget dev
@@ -167,6 +182,10 @@ probe() {
     echo "config1">$CVI_GADGET/configs/c.1/strings/0x409/configuration
     # Set the MaxPower of USB descriptor
     echo 120 >$CVI_GADGET/configs/c.1/MaxPower
+  fi
+  if [ "$CLASS" = "uvc" ] ; then
+    $INSMOD /mnt/system/ko/videobuf2-vmalloc.ko 2>/dev/null || true
+    $INSMOD /mnt/system/ko/usb_f_uvc.ko 2>/dev/null || true
   fi
   # get current functions number
   calc_func
