@@ -11,6 +11,17 @@ case "$1" in
         if [ -f $SYSTEMPATH/ko/loadsystemko.sh ]; then
                 sh $SYSTEMPATH/ko/loadsystemko.sh
         fi
+      # New kernels register /dev/cvi-sys, while older user apps still open
+      # /dev/cvi-base. Create a compatibility alias at boot.
+      if [ ! -e /dev/cvi-sys ]; then
+            SYS_MINOR=$(awk '$2=="cvi-sys" {print $1}' /proc/misc)
+            if [ -n "$SYS_MINOR" ]; then
+                  mknod /dev/cvi-sys c 10 $SYS_MINOR
+            fi
+      fi
+      if [ -e /dev/cvi-sys ] && [ ! -e /dev/cvi-base ]; then
+            ln -sf /dev/cvi-sys /dev/cvi-base
+      fi
         if [ -f $USERDATAPATH/auto.sh ]; then
                 usleep 30000
                 . $USERDATAPATH/auto.sh &
