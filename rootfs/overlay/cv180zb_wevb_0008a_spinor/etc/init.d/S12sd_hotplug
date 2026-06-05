@@ -1,0 +1,18 @@
+#!/bin/sh
+
+case "$1" in
+	start)
+		mkdir -p /mnt/sd
+		echo /sbin/mdev > /proc/sys/kernel/hotplug 2>/dev/null || true
+		mdev -s
+		/usr/sbin/sd_hotplug.sh scan >/dev/null 2>&1 || true
+		/usr/sbin/ota_sd_autoupdate.sh /mnt/sd >/dev/null 2>&1 &
+		;;
+	stop)
+		for d in /mnt/sd_parts/mmcblk*p[0-9]*; do
+			[ -d "$d" ] || continue
+			umount "$d" 2>/dev/null || true
+		done
+		umount /mnt/sd 2>/dev/null || true
+		;;
+esac
