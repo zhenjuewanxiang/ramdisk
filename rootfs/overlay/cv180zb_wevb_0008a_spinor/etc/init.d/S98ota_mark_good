@@ -1,0 +1,12 @@
+#!/bin/sh
+
+case "$1" in
+	start)
+		if command -v fw_printenv >/dev/null 2>&1; then
+			pending=$(fw_printenv -n ota_pending 2>/dev/null || echo none)
+			if [ "$pending" != "none" ]; then
+				/usr/sbin/ota_mark_good.sh >/tmp/ota_mark_good.log 2>&1 || true
+			fi
+		fi
+		;;
+esac

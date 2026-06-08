@@ -1,0 +1,20 @@
+#!/bin/sh
+
+VERSION_FILE=/etc/firmware_version
+
+if [ -f "$VERSION_FILE" ]; then
+	cat "$VERSION_FILE"
+else
+	echo "FW_VERSION=unknown"
+fi
+
+if [ -r /proc/cmdline ]; then
+	case "$(cat /proc/cmdline)" in
+		*cvi_ota_slot=B*) echo "FW_SLOT=B" ;;
+		*cvi_ota_slot=A*) echo "FW_SLOT=A" ;;
+	esac
+fi
+
+if command -v fw_printenv >/dev/null 2>&1; then
+	fw_printenv ota_active ota_pending ota_try ota_version_active ota_version_pending 2>/dev/null || true
+fi

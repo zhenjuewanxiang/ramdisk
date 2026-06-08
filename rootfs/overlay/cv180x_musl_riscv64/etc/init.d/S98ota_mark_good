@@ -1,0 +1,19 @@
+#!/bin/sh
+# Confirm a pending A/B OTA slot after userspace reaches late init.
+
+case "$1" in
+  start)
+        if [ -x /usr/sbin/ota_mark_good.sh ]; then
+                /usr/sbin/ota_mark_good.sh
+        fi
+        ;;
+  stop)
+        ;;
+  restart|reload)
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit 0
