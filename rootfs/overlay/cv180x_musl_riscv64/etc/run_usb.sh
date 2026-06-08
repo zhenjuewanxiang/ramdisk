@@ -187,6 +187,14 @@ probe() {
     $INSMOD /mnt/system/ko/videobuf2-vmalloc.ko 2>/dev/null || true
     $INSMOD /mnt/system/ko/usb_f_uvc.ko 2>/dev/null || true
   fi
+  if [ "$CLASS" = "uac1" ] ; then
+    $INSMOD /mnt/system/ko/soundcore.ko 2>/dev/null || true
+    $INSMOD /mnt/system/ko/snd.ko 2>/dev/null || true
+    $INSMOD /mnt/system/ko/snd-timer.ko 2>/dev/null || true
+    $INSMOD /mnt/system/ko/snd-pcm.ko 2>/dev/null || true
+    $INSMOD /mnt/system/ko/u_audio.ko 2>/dev/null || true
+    $INSMOD /mnt/system/ko/usb_f_uac1.ko 2>/dev/null || true
+  fi
   # get current functions number
   calc_func
   # assign the class code for composite device
